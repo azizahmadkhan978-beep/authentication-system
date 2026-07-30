@@ -1,0 +1,36 @@
+{
+  "name": "auth-service",
+  "version": "1.0.0",
+  "description": "Authentication and RBAC service",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "seed:users": "node scripts/seed-users.js"
+  },
+  "keywords": [
+    "authentication",
+    "authorization",
+    "rbac",
+    "jwt",
+    "express",
+    "nodejs",
+    "postgresql",
+    "microservices"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.22.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

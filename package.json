@@ -1,0 +1,27 @@
+{
+  "name": "authentication-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A two-service authentication and RBAC system using JWT, Express, and PostgreSQL.",
+  "type": "commonjs",
+  "scripts": {
+    "install:all": "npm install --prefix auth-service && npm install --prefix resource-service",
+    "dev:auth": "npm run dev --prefix auth-service",
+    "dev:resource": "npm run dev --prefix resource-service",
+    "start:auth": "npm run start --prefix auth-service",
+    "start:resource": "npm run start --prefix resource-service"
+  },
+  "keywords": [
+    "authentication-system",
+    "authentication",
+    "authorization",
+    "rbac",
+    "jwt",
+    "microservices",
+    "nodejs",
+    "express",
+    "postgresql"
+  ],
+  "author": "",
+  "license": "ISC"
+}
