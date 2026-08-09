@@ -24,12 +24,12 @@ Resources:
   AuthApi:
     Type: AWS::Serverless::HttpApi
     Properties:
-      StageName: prod
+      StageName: $default
 
   ResourceApi:
     Type: AWS::Serverless::HttpApi
     Properties:
-      StageName: prod
+      StageName: $default
 
   AuthFunction:
     Type: AWS::Serverless::Function
@@ -81,8 +81,8 @@ Resources:
 Outputs:
   AuthApiUrl:
     Description: Auth Service API URL
-    Value: !Sub "https://${AuthApi}.execute-api.${AWS::Region}.amazonaws.com/prod"
+    Value: !Sub "https://${AuthApi}.execute-api.${AWS::Region}.amazonaws.com"
 
   ResourceApiUrl:
     Description: Resource Service API URL
-    Value: !Sub "https://${ResourceApi}.execute-api.${AWS::Region}.amazonaws.com/prod"
+    Value: !Sub "https://${ResourceApi}.execute-api.${AWS::Region}.amazonaws.com"
