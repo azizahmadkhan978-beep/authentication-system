@@ -24,3 +24,7 @@ Thumbs.db
 # IDE settings
 .vscode/
 .idea/
+
+#SAM
+.aws-sam/
+samconfig.toml

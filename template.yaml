@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Description: Authentication and RBAC serverless application
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Architectures:
+      - x86_64
+    MemorySize: 256
+    Timeout: 15
+
+Parameters:
+  DatabaseUrl:
+    Type: String
+    NoEcho: true
+
+  JwtSecret:
+    Type: String
+    NoEcho: true
+
+Resources:
+  AuthApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: prod
+
+  ResourceApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: prod
+
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: authentication-auth-service
+      CodeUri: auth-service/
+      Handler: src/lambda.handler
+
+      Environment:
+        Variables:
+          NODE_ENV: production
+          DATABASE_URL: !Ref DatabaseUrl
+          JWT_SECRET: !Ref JwtSecret
+          JWT_EXPIRES_IN: 1h
+          JWT_ISSUER: auth-service
+          JWT_AUDIENCE: resource-service
+
+      Events:
+        AuthProxy:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref AuthApi
+            Path: /{proxy+}
+            Method: ANY
+
+  ResourceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: authentication-resource-service
+      CodeUri: resource-service/
+      Handler: src/lambda.handler
+
+      Environment:
+        Variables:
+          NODE_ENV: production
+          DATABASE_URL: !Ref DatabaseUrl
+          JWT_SECRET: !Ref JwtSecret
+          JWT_ISSUER: auth-service
+          JWT_AUDIENCE: resource-service
+
+      Events:
+        ResourceProxy:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ResourceApi
+            Path: /{proxy+}
+            Method: ANY
+
+Outputs:
+  AuthApiUrl:
+    Description: Auth Service API URL
+    Value: !Sub "https://${AuthApi}.execute-api.${AWS::Region}.amazonaws.com/prod"
+
+  ResourceApiUrl:
+    Description: Resource Service API URL
+    Value: !Sub "https://${ResourceApi}.execute-api.${AWS::Region}.amazonaws.com/prod"
