@@ -19,6 +19,14 @@ Parameters:
   JwtSecret:
     Type: String
     NoEcho: true
+  
+  LambdaSecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: Security group used by both Lambda functions
+
+  LambdaSubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: Subnets used by both Lambda functions
 
 Resources:
   AuthApi:
@@ -37,6 +45,11 @@ Resources:
       FunctionName: authentication-auth-service
       CodeUri: auth-service/
       Handler: src/lambda.handler
+
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroupId
+        SubnetIds: !Ref LambdaSubnetIds
 
       Environment:
         Variables:
@@ -62,6 +75,11 @@ Resources:
       CodeUri: resource-service/
       Handler: src/lambda.handler
 
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroupId
+        SubnetIds: !Ref LambdaSubnetIds
+
       Environment:
         Variables:
           NODE_ENV: production
@@ -86,3 +104,4 @@ Outputs:
   ResourceApiUrl:
     Description: Resource Service API URL
     Value: !Sub "https://${ResourceApi}.execute-api.${AWS::Region}.amazonaws.com"
+
