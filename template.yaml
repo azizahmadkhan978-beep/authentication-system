@@ -12,14 +12,23 @@ Globals:
     Timeout: 15
 
 Parameters:
+  Environment:
+    Type: String
+    AllowedValues:
+      - dev
+      - prod
+    Description: Deployment environment
+
   DatabaseUrl:
     Type: String
     NoEcho: true
+    Description: PostgreSQL connection URL for the RDS database
 
   JwtSecret:
     Type: String
     NoEcho: true
-  
+    Description: Secret used to sign and verify JWT tokens
+
   LambdaSecurityGroupId:
     Type: AWS::EC2::SecurityGroup::Id
     Description: Security group used by both Lambda functions
@@ -42,7 +51,7 @@ Resources:
   AuthFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: authentication-auth-service
+      FunctionName: !Sub "authentication-auth-service-${Environment}"
       CodeUri: auth-service/
       Handler: src/lambda.handler
 
@@ -54,6 +63,7 @@ Resources:
       Environment:
         Variables:
           NODE_ENV: production
+          APP_ENV: !Ref Environment
           DATABASE_URL: !Ref DatabaseUrl
           JWT_SECRET: !Ref JwtSecret
           JWT_EXPIRES_IN: 1h
@@ -61,6 +71,13 @@ Resources:
           JWT_AUDIENCE: resource-service
 
       Events:
+        AuthRoot:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref AuthApi
+            Path: /
+            Method: ANY
+
         AuthProxy:
           Type: HttpApi
           Properties:
@@ -71,7 +88,7 @@ Resources:
   ResourceFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: authentication-resource-service
+      FunctionName: !Sub "authentication-resource-service-${Environment}"
       CodeUri: resource-service/
       Handler: src/lambda.handler
 
@@ -83,12 +100,20 @@ Resources:
       Environment:
         Variables:
           NODE_ENV: production
+          APP_ENV: !Ref Environment
           DATABASE_URL: !Ref DatabaseUrl
           JWT_SECRET: !Ref JwtSecret
           JWT_ISSUER: auth-service
           JWT_AUDIENCE: resource-service
 
       Events:
+        ResourceRoot:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ResourceApi
+            Path: /
+            Method: ANY
+
         ResourceProxy:
           Type: HttpApi
           Properties:
@@ -105,3 +130,6 @@ Outputs:
     Description: Resource Service API URL
     Value: !Sub "https://${ResourceApi}.execute-api.${AWS::Region}.amazonaws.com"
 
+  DeploymentEnvironment:
+    Description: Deployment environment
+    Value: !Ref Environment
