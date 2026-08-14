@@ -14,5 +14,40 @@ services:
       - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql
       - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
 
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: authentication-auth-service
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      APP_ENV: dev
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/authentication_system
+      JWT_SECRET: local-dev-jwt-secret
+      JWT_EXPIRES_IN: 1h
+      JWT_ISSUER: auth-service
+      JWT_AUDIENCE: resource-service
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+
+  resource-service:
+    build:
+      context: ./resource-service
+    container_name: authentication-resource-service
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      APP_ENV: dev
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/authentication_system
+      JWT_SECRET: local-dev-jwt-secret
+      JWT_ISSUER: auth-service
+      JWT_AUDIENCE: resource-service
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres
+
 volumes:
   authentication_postgres_data:

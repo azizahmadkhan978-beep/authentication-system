@@ -28,3 +28,16 @@ Thumbs.db
 #SAM
 .aws-sam/
 samconfig.toml
+
+# Kubernetes secrets
+kubernetes/dev/app-secret.yaml
+kubernetes/dev/postgres-secret.yaml
+kubernetes/prod/app-secret.yaml
+kubernetes/prod/postgres-secret.yaml
+
+# SAM local deployment config
+samconfig.toml
+
+# Environment files
+.env
+.env.*

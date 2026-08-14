@@ -1,0 +1,10 @@
+apiVersion: getambassador.io/v3alpha1
+kind: Mapping
+metadata:
+  name: auth-service-mapping
+  namespace: emissary
+spec:
+  hostname: "*"
+  prefix: /auth/
+  rewrite: /
+  service: auth-service.authentication-dev:3001

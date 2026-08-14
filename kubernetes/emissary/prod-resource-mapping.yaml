@@ -1,0 +1,10 @@
+apiVersion: getambassador.io/v3alpha1
+kind: Mapping
+metadata:
+  name: prod-resource-service-mapping
+  namespace: emissary
+spec:
+  hostname: "*"
+  prefix: /prod/resource
+  rewrite: /resource
+  service: resource-service.authentication-prod:3002
